@@ -19,6 +19,7 @@ const initialState = {
   simulaQueriesRemaining: CONFIG.AI_QUERY_LIMIT,
   dbReady: false,
   chatMessages: [],
+  documents: [],
 }
 
 function reducer(state, action) {
@@ -31,6 +32,7 @@ function reducer(state, action) {
         ...action.payload,
         currentTab: 'home',
         transactionType: CONFIG.TX.INCOME,
+        documents: JSON.parse(localStorage.getItem('eztrack_docs') || '[]'),
       }
     case 'LOGOUT':
       return { ...initialState, dbReady: state.dbReady }
@@ -81,6 +83,11 @@ function reducer(state, action) {
       return { ...state, simulaQueriesRemaining: CONFIG.AI_QUERY_LIMIT }
     case 'ADD_CHAT_MESSAGE':
       return { ...state, chatMessages: [...state.chatMessages, action.payload] }
+    case 'ADD_DOCUMENT': {
+      const docs = [...state.documents, action.payload]
+      localStorage.setItem('eztrack_docs', JSON.stringify(docs))
+      return { ...state, documents: docs }
+    }
     default:
       return state
   }

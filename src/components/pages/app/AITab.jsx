@@ -144,6 +144,7 @@ export default function AITab() {
         reply: data.choices?.[0]?.message?.content || '',
         toolCallsUsed: data.tool_calls_used || [],
         tables: data.tables || [],
+        documents: data.documents || [],
       }
     } catch {
       return null
@@ -174,6 +175,10 @@ export default function AITab() {
     const reply = result ? result.reply : keywordReply(text.trim())
 
     await refreshState()
+
+    if (result?.documents) {
+      result.documents.forEach(d => dispatch({ type: 'ADD_DOCUMENT', payload: d }))
+    }
 
     const aiMsg = { role: 'ai', text: reply, ts: userMsg.ts, tools: result?.toolCallsUsed || [], tables: result?.tables || [] }
     dispatch({ type: 'ADD_CHAT_MESSAGE', payload: aiMsg })

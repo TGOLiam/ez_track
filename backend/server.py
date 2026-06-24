@@ -2,11 +2,9 @@ import os
 import json
 import httpx
 from pathlib import Path
-from datetime import datetime
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Depends, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
@@ -20,8 +18,6 @@ from . import database as db
 from .tools.registry import get_tool_defs, get_tool_list_text, execute
 
 # ── Config ──
-DOCS_DIR = os.path.join(os.path.dirname(__file__), "generated_docs")
-os.makedirs(DOCS_DIR, exist_ok=True)
 
 API_KEY = os.getenv("API_KEY", "")
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
@@ -167,6 +163,7 @@ async def chat_loop(messages: list, ctx: dict, tier: str, max_rounds: int = 5):
     conn = db.get_conn()
     tool_calls_used = []
     tables = []
+    documents = []
 
     for _ in range(max_rounds):
         result = await call_llm(msgs, tool_defs)
@@ -175,7 +172,7 @@ async def chat_loop(messages: list, ctx: dict, tier: str, max_rounds: int = 5):
         choice = result.get("choices", [{}])[0]
         msg = choice.get("message", {})
         if choice.get("finish_reason") == "stop" or not msg.get("tool_calls"):
-            return {"reply": msg.get("content") or "", "tool_calls_used": tool_calls_used, "tables": tables}
+            return {"reply": msg.get("content") or "", "tool_calls_used": tool_calls_used, "tables": tables, "documents": documents}
         msgs.append({"role": "assistant", "content": msg.get("content"), "tool_calls": msg["tool_calls"]})
         for tc in msg["tool_calls"]:
             name = tc["function"]["name"]
@@ -185,11 +182,14 @@ async def chat_loop(messages: list, ctx: dict, tier: str, max_rounds: int = 5):
                 func_result = execute(tc["function"]["name"], func_args, conn, ctx)
                 if name == "render_table":
                     tables.append({"columns": func_args.get("columns", []), "rows": func_args.get("rows", [])})
+                if isinstance(func_result, dict) and "document" in func_result:
+                    doc = func_result.pop("document")
+                    documents.append(doc)
             except Exception as e:
                 func_result = {"error": str(e)}
             msgs.append({"role": "tool", "tool_call_id": tc["id"], "content": json.dumps(func_result)})
 
-    return {"reply": "I could not complete that request in the available steps. Please try again.", "tool_calls_used": tool_calls_used, "tables": tables}
+    return {"reply": "I could not complete that request in the available steps. Please try again.", "tool_calls_used": tool_calls_used, "tables": tables, "documents": documents}
 
 # ── System prompt template ──
 PROMPT_PATH = Path(__file__).parent / "system-prompt.txt"
@@ -307,6 +307,7 @@ async def chat(request: Request, data: ChatRequest):
         "choices": [{"message": {"content": result["reply"]}}],
         "tool_calls_used": result.get("tool_calls_used", []),
         "tables": result.get("tables", []),
+        "documents": result.get("documents", []),
     }
 
 @app.post("/api/refresh/{profile_id}", dependencies=[Depends(verify_api_key)])
@@ -317,39 +318,3 @@ def refresh(profile_id: int):
     if not state:
         raise HTTPException(404, "Profile not found")
     return state
-
-import re
-
-@app.get("/api/documents/{profile_id}", dependencies=[Depends(verify_api_key)])
-def list_documents(profile_id: int):
-    files = []
-    if not os.path.isdir(DOCS_DIR):
-        return files
-    for fname in os.listdir(DOCS_DIR):
-        if fname.endswith(".docx") and f"_{profile_id}_" in fname:
-            parts = fname.split("_")
-            dtype = parts[0].capitalize()
-            ts_str = "_".join(parts[2:]).replace(".docx", "") if len(parts) >= 3 else ""
-            title = fname
-            date_str = ""
-            if ts_str:
-                try:
-                    dt = datetime.strptime(ts_str, "%Y%m%d_%H%M%S")
-                    date_str = dt.strftime("%b %d, %Y · %I:%M %p")
-                except ValueError:
-                    date_str = ts_str
-            files.append({"filename": fname, "type": dtype, "title": title, "date": date_str})
-    files.sort(key=lambda x: x["filename"], reverse=True)
-    return files
-
-@app.get("/api/documents/{profile_id}/{filename}", dependencies=[Depends(verify_api_key)])
-def serve_document(profile_id: int, filename: str):
-    safe = os.path.basename(filename)
-    path = os.path.join(DOCS_DIR, safe)
-    if not os.path.exists(path):
-        raise HTTPException(404, "Document not found")
-    return FileResponse(
-        path,
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        filename=safe,
-    )

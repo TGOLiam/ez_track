@@ -1,21 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useApp } from '@/context/AppContext'
 import { CONFIG } from '@/config'
 import { WEEKDATA } from '@/data/weekdata'
-import { api, docUrl } from '@/lib/api'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function ReportsTab() {
   const [tab, setTab] = useState('analytics')
   const { state } = useApp()
-  const [docs, setDocs] = useState([])
+  const docs = state.documents
   const tier = state.tier
 
-  useEffect(() => {
-    if (state.profileId) {
-      api.get('/documents/' + state.profileId).then(setDocs).catch(() => {})
-    }
-  }, [state.profileId])
+  function downloadDoc(doc) {
+    try {
+      const bytes = Uint8Array.from(atob(doc.data), c => c.charCodeAt(0))
+      const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+      const url = URL.createObjectURL(blob)
+      window.open(url)
+    } catch {}
+  }
   const totalInc = state.transactions.filter(t => t.type === 'inc').reduce((s, t) => s + t.amt, 0)
   const totalExp = state.transactions.filter(t => t.type === 'exp').reduce((s, t) => s + t.amt, 0)
   const net = totalInc - totalExp
@@ -252,14 +254,12 @@ export default function ReportsTab() {
                   <div className="text-sm font-semibold text-gray-800 mt-0.5">{d.title}</div>
                   <div className="text-xs text-gray-400 mt-0.5">{d.date}</div>
                 </div>
-                <a
-                  href={docUrl(state.profileId, d.filename)}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => downloadDoc(d)}
                   className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-colors"
                 >
                   Open
-                </a>
+                </button>
               </div>
             </div>
           ))

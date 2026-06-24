@@ -1,21 +1,30 @@
-import os
+from io import BytesIO
+import base64
 from datetime import datetime
 from ..templates import receipt, invoice, report
 
-DOCS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "generated_docs")
-os.makedirs(DOCS_DIR, exist_ok=True)
+_doc_counter = 0
 
 def _next_number(ctx, prefix):
-    count_file = os.path.join(DOCS_DIR, f"counter_{prefix}.txt")
-    try:
-        with open(count_file) as f:
-            n = int(f.read().strip()) + 1
-    except (FileNotFoundError, ValueError):
-        n = 1
-    with open(count_file, "w") as f:
-        f.write(str(n))
-    ctx["nextDocNumber"] = n
-    return n
+    global _doc_counter
+    _doc_counter += 1
+    ctx["nextDocNumber"] = _doc_counter
+    return _doc_counter
+
+def _encode_doc(doc, ctx, doc_type, filename, title):
+    buf = BytesIO()
+    doc.save(buf)
+    encoded = base64.b64encode(buf.getvalue()).decode('ascii')
+    return {
+        "success": True,
+        "document": {
+            "filename": filename,
+            "type": doc_type,
+            "title": title,
+            "date": datetime.now().strftime("%b %d, %Y · %I:%M %p"),
+            "data": encoded,
+        }
+    }
 
 def generate_receipt(args, db_conn, ctx):
     items = args.get("items", [])
@@ -34,11 +43,9 @@ def generate_receipt(args, db_conn, ctx):
     doc = receipt.build(items, customer, payment, ctx, tier)
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"receipt_{ctx['profileId']}_{ts}.docx"
-    path = os.path.join(DOCS_DIR, filename)
-    doc.save(path)
-
     title = f"Receipt — {args['customer_name']}"
-    return {"success": True, "filename": filename, "title": title}
+
+    return _encode_doc(doc, ctx, "Receipt", filename, title)
 
 def generate_invoice(args, db_conn, ctx):
     items = args.get("items", [])
@@ -62,11 +69,9 @@ def generate_invoice(args, db_conn, ctx):
     doc = invoice.build(items, customer, payment, ctx, tier, discount, withholding_tax, notes)
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"invoice_{ctx['profileId']}_{ts}.docx"
-    path = os.path.join(DOCS_DIR, filename)
-    doc.save(path)
-
     title = f"Invoice — {args['customer_name']}"
-    return {"success": True, "filename": filename, "title": title}
+
+    return _encode_doc(doc, ctx, "Invoice", filename, title)
 
 def generate_report(args, db_conn, ctx):
     if not args.get("period") or not args.get("ai_summary"):
@@ -97,19 +102,17 @@ def generate_report(args, db_conn, ctx):
             "goal_label": args.get("goal_label", ""),
             "goal_progress": args.get("goal_progress", ""),
             "goal_note": args.get("goal_note", ""),
-            "ar_current": args.get("ar_current", "₱0.00"),
-            "ar_30days": args.get("ar_30days", "₱0.00"),
-            "ar_60days": args.get("ar_60days", "₱0.00"),
-            "ar_90plus": args.get("ar_90plus", "₱0.00"),
+            "ar_current": args.get("ar_current", "\u20b10.00"),
+            "ar_30days": args.get("ar_30days", "\u20b10.00"),
+            "ar_60days": args.get("ar_60days", "\u20b10.00"),
+            "ar_90plus": args.get("ar_90plus", "\u20b10.00"),
         })
 
     doc = report.build(ctx, tier, data)
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     prefix = "weekly" if tier == "sigla" else "monthly"
     filename = f"{prefix}_report_{ctx['profileId']}_{ts}.docx"
-    path = os.path.join(DOCS_DIR, filename)
-    doc.save(path)
-
     label = "Weekly" if tier == "sigla" else "Monthly"
     title = f"{label} Report — {args['period']}"
-    return {"success": True, "filename": filename, "title": title}
+
+    return _encode_doc(doc, ctx, label, filename, title)
