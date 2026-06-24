@@ -1,0 +1,132 @@
+/* ============================================================
+   EzTrack – Configuration Layer
+   Single source of truth for all configurable values,
+   tier definitions, plan data, UI labels, and constants.
+   ============================================================ */
+
+/* Defined outside CONFIG to avoid circular references during init */
+const TIERS = { SIMULA: 'simula', SIGLA: 'sigla', UNLAD: 'unlad' };
+const TX_TYPES = { INCOME: 'inc', EXPENSE: 'exp' };
+
+const CONFIG = {
+  TIERS,
+  TX: TX_TYPES,
+
+  /* ── Currency & locale ── */
+  CURRENCY_SYMBOL: '₱',
+  LOCALE: 'en-PH',
+
+  /* ── Timing (ms) ── */
+  TOAST_DURATION_MS: 2400,
+  SPLASH_DURATION_MS: 2300,
+  SPLASH_FADE_MS: 560,
+
+  /* ── Display limits ── */
+  AI_QUERY_LIMIT: 10,
+  TX_LIST_LIMIT_SIMULA: 5,
+  TX_LIST_LIMIT_OTHER: 8,
+  MIN_PASSWORD_LENGTH: 6,
+  BAR_CHART_HEIGHT_PX: 106,
+  AI_CONTEXT_TX_LIMIT: 10,
+  WEEKLY_LOOKBACK_DAYS: 7,
+  TG_CODE_MIN: 1000,
+  TG_CODE_RANGE: 9000,
+
+  /* ── Storage key ── */
+  STORAGE_KEY: 'ez_db',
+
+  /* ── Default values ── */
+  DEFAULT_BIZ_TYPE: 'sari',
+  DEFAULT_LANG: 'taglish',
+  DEFAULT_TIER: TIERS.SIMULA,
+  DEFAULT_BIZ_NAME: 'My Business',
+
+  /* ── Tier display metadata ── */
+  TIER_META: {
+    simula: { label: 'Simula – Free',    color: '#4ADE80' },
+    sigla:  { label: 'Sigla – ₱249/mo', color: '#60A5FA' },
+    unlad:  { label: 'Unlad – ₱699/mo', color: '#FBBF24' },
+  },
+
+  /* ── Business type icons ── */
+  BIZ_ICONS: { sari: '🏪', food: '🍱', online: '📦', services: '🔧', retail: '🛍️', other: '💼' },
+
+  /* ── Tier labels (for profile card picker) ── */
+  TIER_CARD_LABELS: {
+    simula: 'Simula – Free',
+    sigla:  'Sigla – ₱249/mo',
+    unlad:  'Unlad – ₱699/mo',
+  },
+
+  /* ── Profile limits per tier ── */
+  PROFILE_LIMITS: {
+    simula: { current: '1 of 1', max: 1 },
+    sigla:  { current: '1 of 2', max: 2 },
+    unlad:  { current: '2 of 5', max: 5 },
+  },
+
+  /* ── Plan definitions ── */
+  PLANS: [
+    {
+      id: 'simula',
+      nameLabel: 'FREE TIER', tier: 'Simula',
+      tagline: '"Just help me track my money."',
+      monthly: 0, annual: 0,
+      badge: 'Free Forever', badgeCls: 'free-badge', nameCls: 'free',
+      features: [
+        'Income & expense tracking via Telegram',
+        'Weekly Heartbeat (AI financial pulse)',
+        'Basic inventory (up to 150 items)',
+        'Daily cash summary in Taglish / English',
+        'Simple overspending alert',
+        '1 business profile',
+        'Offline logging with cloud sync',
+        'Self-serve help center',
+        'Limited AI queries (10/month)',
+      ],
+      notIncluded: ['Expense categories', 'Monthly reports', 'Invoice generator', 'Unlimited AI chat', 'Tax tools'],
+    },
+    {
+      id: 'sigla',
+      nameLabel: 'GROWTH TIER', tier: 'Sigla',
+      tagline: '"I need to know where my money goes."',
+      monthly: 299, annual: 3580,
+      badge: 'Most Popular', badgeCls: '', nameCls: '',
+      features: [
+        'Everything in Simula',
+        'Daily + on-demand Heartbeat',
+        'Expense categories & breakdown chart',
+        'Monthly AI-written financial report',
+        'Best & worst performing days',
+        'Invoice & receipt generator (PDF/image)',
+        'Basic customer records',
+        'AI chat assistant',
+        'Email support',
+        '2 business profiles',
+      ],
+      notIncluded: ['Tax tools / BIR reminders', 'Payroll tracker', 'Cash flow forecast', 'Multi-user access'],
+    },
+    {
+      id: 'unlad',
+      nameLabel: 'PRIME TIER', tier: 'Unlad',
+      tagline: '"I have staff. I need tax tools & forecasts."',
+      monthly: 699, annual: 6990,
+      badge: 'Best Value', badgeCls: '', nameCls: 'enterprise',
+      features: [
+        'Everything in Sigla',
+        'Proactive alerts (no waiting for weekly summary)',
+        'Goal setting with AI monitoring',
+        '30-day cash flow forecast',
+        'P&L report (monthly & quarterly)',
+        'Branded invoices + AR tracker',
+        'Basic payroll tracker',
+        'BIR quarterly deadline reminders',
+        '3% percentage tax awareness',
+        'Multi-user access (Owner + Staff roles)',
+        '5 business profiles',
+        'Chat support',
+      ],
+      notIncluded: [],
+    },
+  ],
+};

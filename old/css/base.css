@@ -1,0 +1,131 @@
+/* ============================================================
+   EzTrack – Base Styles & App Shell
+   Resets, body, viewport wrapper, page system, bottom nav
+   ============================================================ */
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  background: #0F172A;
+  color: var(--gray-800);
+  font-size: 15px;
+  overscroll-behavior: none;
+}
+
+input, select, textarea, button {
+  font-family: var(--font);
+}
+
+/* ── Viewport shell (mobile-first centred container) ── */
+#viewport {
+  width: 100%;
+  max-width: 430px;
+  height: 100vh;
+  margin: 0 auto;
+  background: var(--gray-50);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Page system ── */
+.page {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  background: var(--gray-50);
+  overflow: hidden;
+  transition: opacity .22s ease;
+}
+.page.active { display: flex; }
+
+.page-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 90px;
+}
+.page-scroll::-webkit-scrollbar { width: 0; }
+
+/* ── Bottom nav ── */
+.bottom-nav {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 68px;
+  background: var(--white);
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  z-index: 10;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.bnav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--gray-400);
+  font-size: 10px;
+  font-weight: 600;
+  transition: color .15s;
+}
+.bnav-item svg  { width: 22px; height: 22px; }
+.bnav-item.active { color: var(--blue-600); }
+.bnav-item:hover  { color: var(--blue-400); }
+
+/* ── Toast notification ── */
+#toast {
+  position: absolute;
+  top: 80px; left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: var(--gray-900);
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: 22px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 500;
+  opacity: 0;
+  transition: all .25s;
+  pointer-events: none;
+}
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Utility classes ── */
+.hide { display: none !important; }
+.mt8  { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+.pb16 { padding-bottom: 16px; }
+.divider {
+  height: 1px;
+  background: var(--gray-100);
+  margin: 4px 16px 12px;
+}
+
+/* ── Select arrow ── */
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}

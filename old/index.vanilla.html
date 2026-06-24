@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>EzTrack – Financial Companion for Filipino SMBs</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+
+<!-- ══ STYLES (load order matters: tokens → base → components → pages) ══ -->
+<link rel="stylesheet" href="css/variables.css"/>
+<link rel="stylesheet" href="css/base.css"/>
+<link rel="stylesheet" href="css/components.css"/>
+<link rel="stylesheet" href="css/pages.css"/>
+</head>
+<body>
+<div id="viewport">
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+<!-- ════════════════════════════
+     SPLASH
+════════════════════════════ -->
+<div class="page active" id="page-splash">
+  <div class="splash-inner">
+    <div class="splash-logo-ring">
+        <img src="assets/images/logo.jpg" alt="EzTrack Logo" class="splash-logo">
+    </div>
+    <div class="splash-wordmark">EzTrack</div>
+    <div class="splash-tagline">YOUR FINANCIAL COMPANION SINCE DAY 1</div>
+    <div class="splash-loader">
+      <div class="sl-dot"></div><div class="sl-dot"></div><div class="sl-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     LOGIN / PROFILE PICKER
+════════════════════════════ -->
+<div class="page auth-page" id="page-login">
+  <div class="auth-header">
+    <div class="auth-header-logo">
+      <div class="auth-logo-sm">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="11" height="10" rx="2" fill="rgba(255,255,255,0.3)"/><rect x="3.5" y="7" width="8" height="1.5" rx=".75" fill="white"/><rect x="3.5" y="10" width="6" height="1.2" rx=".6" fill="rgba(255,255,255,0.6)"/><circle cx="16" cy="15" r="4" fill="rgba(255,255,255,0.85)"/><path d="M14 15l1.4 1.4L18 13.5" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="auth-logo-name">EzTrack</span>
+    </div>
+    <div class="auth-title">Welcome back,<br/>Negosyante! 👋</div>
+    <div class="auth-sub">Choose your demo account</div>
+  </div>
+  <div class="auth-body">
+    <div class="profile-grid" id="profile-grid"></div>
+    <div class="auth-divider"><span>or</span></div>
+    <button class="btn-ghost" onclick="goTo('page-register')">Create New Account</button>
+    <div class="auth-link" style="margin-top:24px;font-size:12px;color:var(--gray-400);">
+      By signing in, you agree to EzTrack's <a>Terms of Service</a> and <a>Privacy Policy</a>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     REGISTER
+════════════════════════════ -->
+<div class="page auth-page" id="page-register">
+  <div class="auth-header">
+    <div class="auth-header-logo">
+      <button class="auth-back-btn" onclick="goTo('page-login')">← Back</button>
+    </div>
+    <div class="auth-title">Simulan natin! 🚀</div>
+    <div class="auth-sub">Create your free EzTrack account</div>
+  </div>
+  <div class="auth-body">
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input class="form-input" type="text" id="reg-name" placeholder="Maria Santos"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input class="form-input" type="email" id="reg-email" placeholder="yourname@email.com"/>
+      <div class="err-msg hide" id="reg-email-err">Please enter a valid email.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="input-eye">
+        <input class="form-input" type="password" id="reg-pass" placeholder="Min. 6 characters"/>
+        <button class="eye-btn" onclick="togglePwd('reg-pass',this)" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="err-msg hide" id="reg-pass-err">Password must be at least 6 characters.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirm Password</label>
+      <div class="input-eye">
+        <input class="form-input" type="password" id="reg-pass2" placeholder="Repeat password"/>
+        <button class="eye-btn" onclick="togglePwd('reg-pass2',this)" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="err-msg hide" id="reg-pass2-err">Passwords do not match.</div>
+    </div>
+    <button class="btn-primary" onclick="doRegister()">Create Account — It's Free!</button>
+    <div class="auth-link">Already have an account? <a onclick="goTo('page-login')">Sign in</a></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     PLAN PICKER
+════════════════════════════ -->
+<div class="page" id="page-plans">
+  <div class="plans-header">
+    <div class="plans-header-title">Choose your plan</div>
+    <div class="plans-header-sub">Start free. Upgrade as you grow. Cancel anytime.</div>
+    <div class="plans-toggle" style="margin-top:16px;">
+      <button class="plans-toggle-btn active" id="bill-monthly" onclick="setBilling('monthly')">Monthly</button>
+      <button class="plans-toggle-btn" id="bill-annual" onclick="setBilling('annual')">Annual (save 17%)</button>
+    </div>
+  </div>
+  <div class="page-scroll" style="padding-bottom:24px;">
+    <div class="plans-body" id="plans-body">
+      <!-- rendered by plans.js -->
+    </div>
+    <div class="plan-guarantee">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      No credit card needed for Simula · Cancel anytime
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     PROFILE SETUP
+════════════════════════════ -->
+<div class="page" id="page-setup" style="background:var(--white);">
+  <div class="setup-header">
+    <div class="setup-step">STEP 1 OF 2</div>
+    <div class="setup-title">Tell us about<br/>your business</div>
+    <div class="setup-sub">This helps EzTrack personalize your experience</div>
+    <div class="setup-progress">
+      <div class="setup-prog-dot done" id="sp1"></div>
+      <div class="setup-prog-dot" id="sp2"></div>
+    </div>
+  </div>
+  <div class="setup-body">
+    <div class="form-group">
+      <label class="form-label">Business Name</label>
+      <input class="form-input" type="text" id="setup-biz" placeholder="e.g. Anning Sari-Sari Store"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Business Type</label>
+      <div class="biz-type-grid" id="biz-type-grid">
+        <div class="biz-type-card selected" data-type="sari" onclick="selectBizType(this)"><div class="biz-type-icon">🏪</div><div class="biz-type-label">Sari-Sari Store</div></div>
+        <div class="biz-type-card" data-type="food" onclick="selectBizType(this)"><div class="biz-type-icon">🍱</div><div class="biz-type-label">Food Business</div></div>
+        <div class="biz-type-card" data-type="online" onclick="selectBizType(this)"><div class="biz-type-icon">📦</div><div class="biz-type-label">Online Seller</div></div>
+        <div class="biz-type-card" data-type="services" onclick="selectBizType(this)"><div class="biz-type-icon">🔧</div><div class="biz-type-label">Services</div></div>
+        <div class="biz-type-card" data-type="retail" onclick="selectBizType(this)"><div class="biz-type-icon">🛍️</div><div class="biz-type-label">Retail Shop</div></div>
+        <div class="biz-type-card" data-type="other" onclick="selectBizType(this)"><div class="biz-type-icon">💼</div><div class="biz-type-label">Other</div></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">City / Municipality</label>
+      <input class="form-input" type="text" id="setup-city" placeholder="e.g. Quezon City"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Preferred Language</label>
+      <div class="lang-toggle">
+        <button class="lang-btn selected" id="lang-en" onclick="setLang('en')">🇵🇭 Taglish</button>
+        <button class="lang-btn" id="lang-tl" onclick="setLang('en-only')">🇺🇸 English Only</button>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="setupNext()">Continue</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SETUP STEP 2 – TELEGRAM
+════════════════════════════ -->
+<div class="page" id="page-setup2" style="background:var(--white);">
+  <div class="setup-header">
+    <div class="setup-step">STEP 2 OF 2</div>
+    <div class="setup-title">Connect Telegram<br/>for your Heartbeat 💙</div>
+    <div class="setup-sub">EzTrack delivers your financial pulse via Telegram — no need to open the app</div>
+    <div class="setup-progress">
+      <div class="setup-prog-dot done"></div><div class="setup-prog-dot done"></div>
+    </div>
+  </div>
+  <div class="setup-body">
+    <div class="card setup-tg-card">
+      <div class="setup-tg-row">
+        <div class="setup-tg-avatar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.56-.46.7-.92.44l-2.52-1.86-1.22 1.16c-.14.14-.28.2-.54.2l.18-2.6 4.74-4.28c.2-.18-.04-.28-.32-.1l-5.86 3.7-2.52-.78c-.54-.18-.56-.54.12-.8l9.84-3.8c.46-.16.86.1.7.8z"/></svg>
+        </div>
+        <div>
+          <div class="setup-tg-title">Connect to @EzTrackBot</div>
+          <div class="setup-tg-text">Your AI heartbeat, alerts, and conversational logging — all delivered through Telegram.</div>
+        </div>
+      </div>
+    </div>
+    <div class="setup-steps-wrap">
+      <div class="setup-step-row">
+        <div class="setup-step-num">1</div>
+        <div class="setup-step-text">Open Telegram and search for <strong>@EzTrackPHBot</strong></div>
+      </div>
+      <div class="setup-step-row">
+        <div class="setup-step-num">2</div>
+        <div class="setup-step-text">Tap <strong>Start</strong> and send your unique code below</div>
+      </div>
+      <div class="setup-step-row">
+        <div class="setup-step-num">3</div>
+        <div class="setup-step-text">Your Heartbeat briefings will start arriving the next morning</div>
+      </div>
+    </div>
+    <div class="setup-code-box">
+      <div class="setup-code-label">YOUR LINK CODE</div>
+      <div class="setup-code-value" id="tg-code">EZT-4829</div>
+      <div class="setup-code-hint">Tap to copy</div>
+    </div>
+    <button class="btn-primary" onclick="finishSetup()">I've Connected — Take Me In!</button>
+    <button class="btn-ghost" onclick="finishSetup()">Skip for Now</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     MAIN APP
+════════════════════════════ -->
+<div class="page" id="page-app">
+  <!-- TOP BAR -->
+  <div class="app-topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <svg viewBox="0 0 17 17" fill="none"><rect x="1" y="4" width="10" height="9" rx="2" fill="rgba(255,255,255,0.3)"/><rect x="2.5" y="5.5" width="7" height="1.5" rx=".75" fill="white"/><rect x="2.5" y="8.5" width="5" height="1.2" rx=".6" fill="rgba(255,255,255,0.55)"/><circle cx="13.5" cy="12" r="3.5" fill="rgba(255,255,255,0.85)"/><path d="M12 12l1.2 1.2L15.5 10.5" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div class="topbar-brand-name">EzTrack</div>
+        <div id="topbar-tier-pill"></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="tb-btn" onclick="openModal('modal-notif')" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="tb-badge" id="notif-badge"></div>
+      </button>
+      <button class="tb-btn" onclick="switchTab('profile')" title="Profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB CONTENT -->
+  <div class="page-scroll" id="tab-scroll">
+    <!-- HOME TAB -->
+    <div id="tab-home" class="tab-content">
+      <div id="home-heartbeat"></div>
+      <div class="sec-label">OVERVIEW</div>
+      <div class="stats-grid" id="home-stats"></div>
+      <button class="log-fab" onclick="openModal('modal-log')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Log Transaction
+      </button>
+      <div id="home-insight"></div>
+      <div class="sec-label">RECENT TRANSACTIONS</div>
+      <div id="home-txlist"></div>
+      <div id="home-tier-extras"></div>
+    </div>
+
+    <!-- REPORTS TAB -->
+    <div id="tab-reports" class="tab-content hide">
+      <div class="sec-label">WEEKLY OVERVIEW</div>
+      <div class="card chart-wrap">
+        <div class="chart-title">Income vs Expenses</div>
+        <div class="bar-chart-cont" id="main-barchart"></div>
+        <div class="chart-legend">
+          <div class="cl-item"><div class="cl-dot" style="background:var(--blue-500)"></div>Income</div>
+          <div class="cl-item"><div class="cl-dot" style="background:var(--red-400)"></div>Expenses</div>
+        </div>
+      </div>
+      <div class="summary-row">
+        <div class="sum-card"><div class="sum-lbl">Total Income</div><div class="sum-val blue" id="rpt-income">₱0</div></div>
+        <div class="sum-card"><div class="sum-lbl">Total Expenses</div><div class="sum-val red" id="rpt-expenses">₱0</div></div>
+      </div>
+      <div class="card" style="margin:0 16px 12px;"><div class="sum-lbl">Net Earnings</div><div class="sum-val net" id="rpt-net">₱0</div></div>
+      <div class="sec-label">DAILY STREAK</div>
+      <div class="streak-card">
+        <div class="streak-header"><span class="streak-title">Logging Streak</span><span class="streak-count" id="streak-val">🔥 5 days</span></div>
+        <div class="streak-days" id="streak-days"></div>
+        <div class="streak-days-lbl"><span class="sdl">Mon</span><span class="sdl">Tue</span><span class="sdl">Wed</span><span class="sdl">Thu</span><span class="sdl">Fri</span><span class="sdl">Sat</span><span class="sdl">Sun</span></div>
+      </div>
+      <div id="reports-tier-extras"></div>
+    </div>
+
+    <!-- INVENTORY TAB -->
+    <div id="tab-inventory" class="tab-content hide">
+      <div class="sec-label">STOCK LEVELS</div>
+      <div id="inv-list"></div>
+      <button class="log-fab" onclick="openModal('modal-additem')" style="margin-top:4px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Add Inventory Item
+      </button>
+      <div id="inv-tier-extras"></div>
+    </div>
+
+    <!-- AI TAB -->
+    <div id="tab-ai" class="tab-content hide">
+      <div id="ai-content"></div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div id="tab-profile" class="tab-content hide">
+      <div class="profile-hero">
+        <div class="profile-ava" id="prof-ava">MA</div>
+        <div class="profile-name" id="prof-name">Maria Anning</div>
+        <div class="profile-biz" id="prof-biz">🏪 Anning Sari-Sari Store · Quezon City</div>
+        <div class="profile-tier-badge" id="prof-tier-badge">Simula – Free</div>
+      </div>
+      <div class="sec-label">ACCOUNT</div>
+      <div class="settings-group">
+        <div class="settings-item"><div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div><span class="si-label">Edit Profile</span><div class="si-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+        <div class="settings-item"><div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><span class="si-label">Business Profiles</span><div class="si-right si-val" id="biz-profiles-count">1 of 1</div></div>
+        <div class="settings-item" onclick="openModal('modal-lang')"><div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><span class="si-label">Language</span><div class="si-right si-val">Taglish</div></div>
+        <div class="settings-item"><div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2l-19 9.5 7.5 2 2 7.5L21.5 2z"/></svg></div><span class="si-label">Telegram Connection</span><div class="si-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+      </div>
+      <div class="sec-label">SUBSCRIPTION</div>
+      <div class="settings-group" id="sub-section"></div>
+      <div class="sec-label">SUPPORT</div>
+      <div class="settings-group" id="support-section">
+        <div class="settings-item"><div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div><span class="si-label">Help Center</span><div class="si-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+      </div>
+      <div class="settings-group" style="margin-bottom:24px;">
+        <div class="settings-item" onclick="doLogout()"><div class="si-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><span class="si-label red">Log Out</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="bnav-item active" id="bnav-home" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="bnav-item" id="bnav-reports" onclick="switchTab('reports')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </button>
+    <button class="bnav-item" id="bnav-inventory" onclick="switchTab('inventory')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+      Inventory
+    </button>
+    <button class="bnav-item" id="bnav-ai" onclick="switchTab('ai')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><circle cx="19" cy="5" r="3" fill="currentColor"/></svg>
+      AI
+    </button>
+    <button class="bnav-item" id="bnav-profile" onclick="switchTab('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Profile
+    </button>
+  </nav>
+</div>
+
+<!-- ════════════════════════════
+     MODALS
+════════════════════════════ -->
+
+<!-- LOG TRANSACTION -->
+<div class="modal-overlay" id="modal-log" onclick="overlayClose(event,'modal-log')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Log Transaction</div>
+    <div class="type-toggle">
+      <button class="type-btn inc active" id="ttype-inc" onclick="setTransactionType(CONFIG.TX.INCOME)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Money In
+      </button>
+      <button class="type-btn exp" id="ttype-exp" onclick="setTransactionType(CONFIG.TX.EXPENSE)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+        Money Out
+      </button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amount (₱)</label>
+      <input class="form-input" type="number" id="log-amt" placeholder="0.00" inputmode="decimal"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input class="form-input" type="text" id="log-desc" placeholder="e.g. Sold softdrinks, Bought supplies"/>
+    </div>
+    <div class="form-group hide" id="log-cat-grp">
+      <label class="form-label">Category</label>
+      <select class="form-input" id="log-cat">
+        <option value="">Select category</option>
+        <option>Supplies</option><option>Labor</option><option>Utilities</option>
+        <option>Rent</option><option>Transportation</option><option>Marketing</option><option>Miscellaneous</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input class="form-input" type="date" id="log-date"/>
+    </div>
+    <div class="form-group hide" id="log-note-grp">
+      <label class="form-label">Note (optional)</label>
+      <input class="form-input" type="text" id="log-note" placeholder="Additional details..."/>
+    </div>
+    <button class="modal-submit" onclick="submitLog()">Save Transaction ✓</button>
+  </div>
+</div>
+
+<!-- ADD INVENTORY ITEM -->
+<div class="modal-overlay" id="modal-additem" onclick="overlayClose(event,'modal-additem')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Inventory Item</div>
+    <div class="form-group">
+      <label class="form-label">Item Name</label>
+      <input class="form-input" type="text" id="inv-iname" placeholder="e.g. Softdrinks 1.5L"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Quantity</label>
+      <input class="form-input" type="number" id="inv-iqty" placeholder="0" inputmode="numeric"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Unit</label>
+      <select class="form-input" id="inv-iunit"><option>pcs</option><option>kg</option><option>box</option><option>pack</option><option>bottle</option><option>sachet</option><option>liter</option></select>
+    </div>
+    <div class="form-group hide" id="inv-thresh-grp">
+      <label class="form-label">Minimum Stock Threshold</label>
+      <input class="form-input" type="number" id="inv-ithresh" placeholder="Alert when below this number" inputmode="numeric"/>
+    </div>
+    <button class="modal-submit" onclick="submitAddItem()">Add Item</button>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS -->
+<div class="modal-overlay" id="modal-notif" onclick="overlayClose(event,'modal-notif')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Notifications</div>
+    <div id="notif-list">
+      <div class="notif-item">
+        <div class="notif-ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/></svg></div>
+        <div><div class="notif-title">Weekly Heartbeat delivered</div><div class="notif-sub">Kumita ka ng ₱6,020 ngayong linggo. Ang pinakamalaking gastos: Supplies (₱1,200). Maganda ang trend!</div></div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-ico amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div><div class="notif-title">Low Stock: Instant Noodles</div><div class="notif-sub">Only 6 pcs left. Your minimum is 10. Consider restocking before Friday.</div></div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <div><div class="notif-title">Haven't logged today yet</div><div class="notif-sub">Tap to quickly add today's transactions and keep your streak alive 🔥</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LANGUAGE MODAL -->
+<div class="modal-overlay" id="modal-lang" onclick="overlayClose(event,'modal-lang')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Language / Wika</div>
+    <div class="settings-group" style="margin:0;">
+      <div class="settings-item" onclick="setAppLang('taglish')"><span class="si-label">🇵🇭 Taglish (Filipino-English mix)</span><div class="si-right" id="lang-check-taglish"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      <div class="settings-item" onclick="setAppLang('english')"><span class="si-label">🇺🇸 English Only</span><div class="si-right" id="lang-check-english"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     PRINT REPORT OVERLAY
+════════════════════════════ -->
+<div class="print-overlay" id="print-report">
+  <div class="print-toolbar">
+    <button class="btn-primary" onclick="doPrintReport()" style="max-width:200px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print / Save as PDF
+    </button>
+    <button class="btn-ghost" onclick="closePrintReport()" style="max-width:120px;">Close</button>
+  </div>
+  <div class="print-content" id="print-content"></div>
+</div>
+
+</div><!-- /viewport -->
+
+<!-- ══ SCRIPTS (load order matters) ══ -->
+<!-- 0. SQLite WASM engine -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.11.0/sql-wasm.js"></script>
+<!-- 1. Configuration & data store -->
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<!-- 2. Database layer -->
+<script src="js/db.js"></script>
+<!-- 2. Low-level helpers other modules call directly -->
+<script src="js/utils.js"></script>
+<!-- 3. App-wide navigation -->
+<script src="js/navigation.js"></script>
+<!-- 4. Feature modules (one per page/tab) -->
+<script src="js/auth.js"></script>
+<script src="js/plans.js"></script>
+<script src="js/home.js"></script>
+<script src="js/reports.js"></script>
+<script src="js/inventory.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/modals.js"></script>
+<!-- 5. Bootstrap – runs last, kicks off the splash → login flow -->
+<script src="js/main.js"></script>
+</body>
+</html>

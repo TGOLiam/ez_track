@@ -1,0 +1,340 @@
+[
+  {
+    "name": "calculate",
+    "description": "Perform arithmetic calculations (add, subtract, multiply, divide, percentage). Use this for any math instead of guessing numbers.",
+    "handler": "math",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "expression": {
+          "type": "string",
+          "description": "A mathematical expression using +, -, *, /, %, and parentheses. E.g. (4500 + 1520 + 18000 + 500) - (820 + 380 + 200)"
+        }
+      },
+      "required": ["expression"]
+    }
+  },
+  {
+    "name": "render_table",
+    "description": "Present data in a formatted table. Use this instead of using pipes, dashes, or any formatting characters.",
+    "handler": "table",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "columns": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Column headers, e.g. ['Item', 'Quantity', 'Price']"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "description": "Data rows, e.g. [['Rice', '50 kg', '₱2,500'], ['Oil', '12 L', '₱1,200']]"
+        }
+      },
+      "required": ["columns", "rows"]
+    }
+  },
+  {
+    "name": "list_transactions",
+    "description": "View recent income and expense transactions for the business.",
+    "handler": "core",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "limit": { "type": "integer", "description": "Number of transactions to show (default 10)" }
+      }
+    }
+  },
+  {
+    "name": "list_inventory",
+    "description": "View all inventory items and their current stock levels.",
+    "handler": "core",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "get_insight_card",
+    "description": "Generate a weekly Taglish insight card identifying the biggest expense and trend compared to last week.",
+    "handler": "core",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "check_overspending",
+    "description": "Check if total expenses exceeded total income this week. Returns a plain-language alert if overspending is detected.",
+    "handler": "core",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "add_transaction",
+    "description": "Add a new income (inc) or expense (exp) transaction with description and amount.",
+    "handler": "transactions",
+    "tiers": ["sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["inc", "exp"], "description": "inc = money in, exp = money out" },
+        "desc": { "type": "string", "description": "Short description of the transaction" },
+        "amt": { "type": "number", "description": "Amount in Philippine Peso (₱)" },
+        "cat": { "type": "string", "description": "Category (Supplies, Labor, Utilities, Rent, Transportation, Marketing, Miscellaneous)" }
+      },
+      "required": ["type", "desc", "amt"]
+    }
+  },
+  {
+    "name": "delete_transaction",
+    "description": "Delete a transaction by its ID number.",
+    "handler": "transactions",
+    "tiers": ["sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "description": "The ID of the transaction to delete" }
+      },
+      "required": ["id"]
+    }
+  },
+  {
+    "name": "add_inventory_item",
+    "description": "Add a new inventory item with name, quantity, unit, and optional minimum stock threshold.",
+    "handler": "inventory",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Item name" },
+        "qty": { "type": "integer", "description": "Current stock quantity" },
+        "unit": { "type": "string", "description": "Unit of measurement (pcs, kg, box, pack, bottle, sachet, liter, pair)" },
+        "min_threshold": { "type": "integer", "description": "Minimum stock level before alert (default 0)" }
+      },
+      "required": ["name", "qty", "unit"]
+    }
+  },
+  {
+    "name": "set_stock_threshold",
+    "description": "Set or update the minimum stock threshold for an inventory item to trigger low-stock alerts.",
+    "handler": "inventory",
+    "tiers": ["sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "item_id": { "type": "integer", "description": "The ID of the inventory item" },
+        "min_threshold": { "type": "integer", "description": "New minimum stock level" }
+      },
+      "required": ["item_id", "min_threshold"]
+    }
+  },
+  {
+    "name": "update_inventory_item",
+    "description": "Update an inventory item's name, quantity, or unit.",
+    "handler": "inventory",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "item_id": { "type": "integer", "description": "The ID of the inventory item to update" },
+        "name": { "type": "string", "description": "New item name (optional)" },
+        "qty": { "type": "integer", "description": "New quantity (optional)" },
+        "unit": { "type": "string", "description": "New unit (optional, e.g. pcs, kg, box)" }
+      },
+      "required": ["item_id"]
+    }
+  },
+  {
+    "name": "remove_inventory_item",
+    "description": "Remove an inventory item by its ID.",
+    "handler": "inventory",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "item_id": { "type": "integer", "description": "The ID of the inventory item to remove" }
+      },
+      "required": ["item_id"]
+    }
+  },
+  {
+    "name": "add_customer",
+    "description": "Save a new customer record with name and contact information.",
+    "handler": "customers",
+    "tiers": ["sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Customer full name or business name" },
+        "contact": { "type": "string", "description": "Phone number or email address" }
+      },
+      "required": ["name", "contact"]
+    }
+  },
+  {
+    "name": "set_financial_goal",
+    "description": "Set a financial goal with a target amount and deadline for the AI to monitor.",
+    "handler": "goals",
+    "tiers": ["unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Goal name, e.g. '₱50,000 net profit by December'" },
+        "target_amt": { "type": "number", "description": "Target amount in Philippine Peso (₱)" },
+        "deadline": { "type": "string", "description": "Deadline date (YYYY-MM-DD)" }
+      },
+      "required": ["name", "target_amt", "deadline"]
+    }
+  },
+  {
+    "name": "check_goal_progress",
+    "description": "Check how close you are to reaching your financial goal based on current earnings.",
+    "handler": "goals",
+    "tiers": ["unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "forecast_cashflow",
+    "description": "Generate a 30-day cash flow forecast based on recent transaction patterns.",
+    "handler": "forecasting",
+    "tiers": ["unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "check_tax_deadlines",
+    "description": "Check upcoming BIR quarterly tax deadlines and estimated percentage tax due.",
+    "handler": "tax",
+    "tiers": ["unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "check_restock_needs",
+    "description": "Check which inventory items are below their minimum stock threshold and need restocking.",
+    "handler": "restock",
+    "tiers": ["unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "generate_receipt",
+    "description": "Generate a printable receipt for a customer purchase with itemized list and payment details.",
+    "handler": "documents",
+    "tiers": ["simula", "sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "customer_name": { "type": "string", "description": "Customer full name" },
+        "customer_contact": { "type": "string", "description": "Customer phone number (optional)" },
+        "items": {
+          "type": "array",
+          "description": "List of items purchased",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string", "description": "Full product name including brand, size, and variant. E.g. 'Jasmine Rice 1kg', 'Cooking Oil 1L', not 'rice' or 'oil'" },
+              "qty": { "type": "integer" },
+              "unit_price": { "type": "number" }
+            },
+            "required": ["description", "qty", "unit_price"]
+          }
+        },
+        "payment_method": { "type": "string", "description": "Cash, GCash, Bank Transfer" },
+        "payment_status": { "type": "string", "description": "paid or partial" }
+      },
+      "required": ["customer_name", "items", "payment_method"]
+    }
+  },
+  {
+    "name": "generate_invoice",
+    "description": "Generate a formal sales invoice with itemized line items, discounts, and tax.",
+    "handler": "documents",
+    "tiers": ["sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "customer_name": { "type": "string", "description": "Customer full name" },
+        "customer_contact": { "type": "string", "description": "Customer phone number (optional)" },
+        "customer_tin": { "type": "string", "description": "Customer TIN (for VAT, Unlad only)" },
+        "customer_address": { "type": "string", "description": "Customer business address (for VAT)" },
+        "items": {
+          "type": "array",
+          "description": "List of items being invoiced",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string", "description": "Full product name including brand, size, and variant. E.g. 'Jasmine Rice 1kg', 'Cooking Oil 1L', not 'rice' or 'oil'" },
+              "qty": { "type": "integer" },
+              "unit_price": { "type": "number" }
+            },
+            "required": ["description", "qty", "unit_price"]
+          }
+        },
+        "discount": { "type": "number", "description": "SC/PWD/NAAC discount amount, 0 if none" },
+        "withholding_tax": { "type": "number", "description": "Withholding tax amount, 0 if none" },
+        "payment_method": { "type": "string", "description": "Cash, GCash, Bank Transfer" },
+        "payment_status": { "type": "string", "description": "paid, partial, or unpaid" },
+        "notes": { "type": "string", "description": "Payment terms or notes" }
+      },
+      "required": ["customer_name", "items", "payment_method"]
+    }
+  },
+  {
+    "name": "generate_report",
+    "description": "Generate a sales and financial report. Weekly for Sigla. Monthly for Unlad.",
+    "handler": "documents",
+    "tiers": ["sigla", "unlad"],
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "period": { "type": "string", "description": "e.g. 'June 23-29, 2026' (weekly) or 'June 2026' (monthly)" },
+        "ai_summary": { "type": "string", "description": "2-4 sentence plain-language summary of the period's finances in Taglish" },
+        "total_sales": { "type": "number", "description": "Total income for the period" },
+        "total_expenses": { "type": "number", "description": "Total expenses for the period" },
+        "comparison_text": { "type": "string", "description": "e.g. '+12% vs last week' or '-5% vs last month'" },
+        "strongest_period_label": { "type": "string", "description": "e.g. 'Friday'" },
+        "strongest_period_amount": { "type": "string", "description": "e.g. '₱1,240 avg sales'" },
+        "weakest_period_label": { "type": "string", "description": "e.g. 'Tuesday'" },
+        "weakest_period_amount": { "type": "string", "description": "e.g. '₱580 avg sales'" },
+        "categories": {
+          "type": "array",
+          "description": "Expense breakdown by category",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "amount": { "type": "number" },
+              "pct": { "type": "string", "description": "e.g. '52%'" }
+            }
+          }
+        },
+        "tip_1": { "type": "string", "description": "First actionable tip" },
+        "tip_2": { "type": "string", "description": "Second actionable tip" }
+      },
+      "required": ["period", "ai_summary", "total_sales", "total_expenses"]
+    }
+  }
+]
