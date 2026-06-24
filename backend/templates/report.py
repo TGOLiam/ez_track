@@ -75,12 +75,12 @@ def build(ctx, tier, data):
     _replace_placeholder(doc, "{{tip_2}}", data.get("tip_2", ""))
 
     if tier == "unlad":
-        _replace_placeholder(doc, "{{gross_sales}}", f"₱{data.get('gross_sales', data.get('total_sales', 0)):,.2f}")
-        _replace_placeholder(doc, "{{total_direct_costs}}", f"₱{data.get('total_direct_costs', 0):,.2f}")
-        gp = (data.get("gross_sales", data.get("total_sales", 0)) or 0) - (data.get("total_direct_costs", 0) or 0)
+        _replace_placeholder(doc, "{{gross_sales}}", f"₱{(data.get('gross_sales') or data.get('total_sales', 0)):,.2f}")
+        _replace_placeholder(doc, "{{total_direct_costs}}", f"₱{(data.get('total_direct_costs') or 0):,.2f}")
+        gp = (data.get("gross_sales") or data.get("total_sales", 0)) - (data.get("total_direct_costs") or 0)
         _replace_placeholder(doc, "{{gross_profit}}", f"₱{gp:,.2f}")
-        _replace_placeholder(doc, "{{total_opex}}", f"₱{data.get('total_opex', data.get('total_expenses', 0)):,.2f}")
-        np = gp - (data.get("total_opex", data.get("total_expenses", 0)) or 0)
+        _replace_placeholder(doc, "{{total_opex}}", f"₱{(data.get('total_opex') or data.get('total_expenses', 0)):,.2f}")
+        np = gp - (data.get("total_opex") or data.get("total_expenses", 0))
         _replace_placeholder(doc, "{{net_profit}}", f"₱{np:,.2f}")
         _replace_placeholder(doc, "{{forecast_30day_position}}", data.get("forecast", ""))
         _replace_placeholder(doc, "{{cash_danger_flag}}", data.get("cash_risk", "None"))

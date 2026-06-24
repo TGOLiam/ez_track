@@ -76,6 +76,7 @@ def generate_invoice(args, db_conn, ctx):
 def generate_report(args, db_conn, ctx):
     if not args.get("period") or not args.get("ai_summary"):
         return {"error": "Period and summary required"}
+        return {"error": "Period and summary required"}
 
     tier = ctx.get("tier", "sigla")
     data = {
@@ -115,4 +116,5 @@ def generate_report(args, db_conn, ctx):
     label = "Weekly" if tier == "sigla" else "Monthly"
     title = f"{label} Report — {args['period']}"
 
-    return _encode_doc(doc, ctx, label, filename, title)
+    result = _encode_doc(doc, ctx, label, filename, title)
+    return result

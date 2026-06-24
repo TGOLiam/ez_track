@@ -2,6 +2,7 @@ import os
 import json
 import httpx
 from pathlib import Path
+from datetime import datetime
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Depends, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -124,6 +125,7 @@ def build_system_prompt(ctx: dict, tier: str):
         SYSTEM_PROMPT_TEMPLATE
         .replace("{{bizName}}", ctx.get("bizName") or "Unnamed Business")
         .replace("{{tier}}", tier)
+        .replace("{{currentDate}}", datetime.now().strftime("%B %d, %Y"))
         .replace("{{weeklyIncome}}", f"{ctx.get('weeklyIncome') or 0:,.0f}")
         .replace("{{weeklyExpenses}}", f"{ctx.get('weeklyExpenses') or 0:,.0f}")
         .replace("{{netSign}}", "+" if net >= 0 else "")

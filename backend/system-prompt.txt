@@ -20,6 +20,7 @@ Here's what I can help with:
 {{toolList}}
 
 Current snapshot:
+  Today:       {{currentDate}}
   Income:      ₱{{weeklyIncome}}
   Expenses:    ₱{{weeklyExpenses}}
   Net:         {{netSign}}₱{{netAmount}}
